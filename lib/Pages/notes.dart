@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:notes_v1/Utilities/notes_dialogue_box.dart';
-import 'package:notes_v1/Utilities/notes_tile.dart';
+import 'package:notes_v1/Utilities/Notes%20Utilities/note_viewer.dart';
+import 'package:notes_v1/Utilities/Notes%20Utilities/notes_dialogue_box.dart';
+import 'package:notes_v1/Utilities/Notes%20Utilities/notes_tile.dart';
 
 class Notes extends StatefulWidget {
-  Notes({super.key});
+  const Notes({super.key});
 
   @override
   State<Notes> createState() => _NotesState();
@@ -78,6 +79,19 @@ class _NotesState extends State<Notes> {
     );
   }
 
+  void showViewer() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return NoteViewer(
+          noteName: _notename,
+          note: _note,
+          selectedCategory: _selectedCategory,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,10 +109,13 @@ class _NotesState extends State<Notes> {
           crossAxisCount: 3,
         ),
         itemBuilder: (context, index) {
-          return NotesTile(
-            noteName: _notes[index][0],
-            preview: _notes[index][1],
-            category: _notes[index][2],
+          return GestureDetector(
+            onTap: showViewer,
+            child: NotesTile(
+              noteName: _notes[index][0],
+              preview: _notes[index][1],
+              category: _notes[index][2],
+            ),
           );
         },
       ),

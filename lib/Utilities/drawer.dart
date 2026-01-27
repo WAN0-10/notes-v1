@@ -6,7 +6,7 @@ import 'package:notes_v1/Utilities/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class Drawers extends StatefulWidget {
-  Drawers({super.key});
+  const Drawers({super.key});
 
   @override
   State<Drawers> createState() => _DrawersState();

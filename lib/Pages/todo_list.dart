@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:notes_v1/Utilities/dialogue_box.dart';
-import 'package:notes_v1/Utilities/todo_tile.dart';
+import 'package:notes_v1/Utilities/ToDo%20List%20Utilities/todo_dialogue_box.dart';
+import 'package:notes_v1/Utilities/ToDo%20List%20Utilities/todo_tile.dart';
 import 'package:notes_v1/data/database.dart';
 
 class TodoList extends StatefulWidget {
