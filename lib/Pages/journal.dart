@@ -5,6 +5,6 @@ class Journal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.deepPurple);
+    return Scaffold(backgroundColor: Theme.of(context).colorScheme.surface);
   }
 }

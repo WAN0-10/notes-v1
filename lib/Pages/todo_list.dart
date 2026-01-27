@@ -76,7 +76,7 @@ class _TodoListState extends State<TodoList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple,
+      backgroundColor: Theme.of(context).colorScheme.surface,
 
       //Add Button
       floatingActionButton: FloatingActionButton(

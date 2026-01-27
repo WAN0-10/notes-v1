@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:notes_v1/Pages/journal.dart';
 import 'package:notes_v1/Pages/notes.dart';
 import 'package:notes_v1/Pages/todo_list.dart';
+import 'package:notes_v1/Utilities/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class Drawers extends StatefulWidget {
   Drawers({super.key});
@@ -13,7 +15,7 @@ class Drawers extends StatefulWidget {
 class _DrawersState extends State<Drawers> {
   //keeps track of current page
   int _selectedIndex = 0;
-
+  bool _lights = false;
   //list of pages
   late final List _pages = [
     [Journal(), "One-Line Journal"],
@@ -27,14 +29,14 @@ class _DrawersState extends State<Drawers> {
       appBar: AppBar(
         title: Text(_pages[_selectedIndex][1]),
         centerTitle: true,
-        backgroundColor: Colors.yellow,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 3,
       ),
 
       body: Row(
         children: <Widget>[
           NavigationRail(
-            backgroundColor: Colors.blueGrey,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             selectedIndex: _selectedIndex,
 
             onDestinationSelected: (int index) {
@@ -60,6 +62,41 @@ class _DrawersState extends State<Drawers> {
             ],
             selectedIconTheme: IconThemeData(color: Colors.black),
             unselectedIconTheme: IconThemeData(color: Colors.white),
+
+            //Switch
+            trailing: Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Switch(
+                  thumbIcon: WidgetStateProperty.resolveWith<Icon?>((
+                    Set<WidgetState> states,
+                  ) {
+                    if (states.contains(WidgetState.selected)) {
+                      return const Icon(
+                        Icons.mode_night_outlined,
+                      ); // Icon when the switch is ON
+                    }
+                    return const Icon(
+                      Icons.wb_sunny_rounded,
+                    ); // Icon when the switch is OFF
+                  }),
+                  value: _lights,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      Provider.of<ThemeProvider>(
+                        context,
+                        listen: false,
+                      ).toggleTheme();
+                      _lights = newValue;
+                    });
+                  },
+                  activeThumbColor: Colors.white,
+                  activeTrackColor: Colors.black,
+                  inactiveTrackColor: Colors.deepPurple,
+                  trackOutlineColor: WidgetStateProperty.all(Colors.black),
+                ),
+              ),
+            ),
           ),
           const VerticalDivider(thickness: 1, width: 1),
 

@@ -81,7 +81,7 @@ class _NotesState extends State<Notes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple,
+      backgroundColor: Theme.of(context).colorScheme.surface,
 
       //Add Button
       floatingActionButton: FloatingActionButton(
