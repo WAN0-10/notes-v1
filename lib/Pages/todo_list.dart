@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:notes_v1/Utilities/ToDo%20List%20Utilities/todo_dialogue_box.dart';
 import 'package:notes_v1/Utilities/ToDo%20List%20Utilities/todo_tile.dart';
-import 'package:notes_v1/data/database.dart';
+import 'package:notes_v1/data/todo_database.dart';
 
 class TodoList extends StatefulWidget {
   const TodoList({super.key});
@@ -31,6 +31,7 @@ class _TodoListState extends State<TodoList> {
 
   //text controller
   final _controller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   //checkbox was tapped
   void checkboxChanged(bool? value, int index) {
@@ -42,12 +43,14 @@ class _TodoListState extends State<TodoList> {
 
   //save new task
   void saveNewTask() {
-    setState(() {
-      db.toDoList.add([_controller.text, false]);
-      _controller.clear();
-    });
-    Navigator.of(context).pop();
-    db.updateDatabase();
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        db.toDoList.add([_controller.text, false]);
+        _controller.clear();
+      });
+      Navigator.of(context).pop();
+      db.updateDatabase();
+    }
   }
 
   //create a new task
@@ -57,8 +60,9 @@ class _TodoListState extends State<TodoList> {
       builder: (context) {
         return DialogueBox(
           controller: _controller,
+          formKey: _formKey,
           onSave: saveNewTask,
-          onCancel: () => Navigator.of(context).pop,
+          onCancel: () => Navigator.of(context).pop(),
         );
       },
     );

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:notes_v1/Utilities/Notes%20Utilities/note_viewer.dart';
 import 'package:notes_v1/Utilities/Notes%20Utilities/notes_dialogue_box.dart';
 import 'package:notes_v1/Utilities/Notes%20Utilities/notes_tile.dart';
+import 'package:notes_v1/data/notes_database.dart';
 
 class Notes extends StatefulWidget {
   const Notes({super.key});
@@ -11,48 +13,41 @@ class Notes extends StatefulWidget {
 }
 
 class _NotesState extends State<Notes> {
-  final _notes = [
-    [
-      "Groceries",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vel orci quis massa elementum iaculis. Donec consectetur mi congue iaculis molestie. Sed in dictum nunc. Proin ornare risus erat, nec porttitor diam accumsan id. Fusce semper, orci et gravida ultricies, sem dui condimentum odio, blandit molestie erat ante vitae libero. Duis porttitor nisl non gravida semper. Aenean id augue sed est eleifend molestie eget vitae metus. Praesent laoreet, nulla eu tempus tincidunt, dolor tellus luctus metus, faucibus euismod orci nibh ac turpis. ",
-      Colors.purple,
-    ],
-    [
-      "School Notes",
-      "Vestibulum sed orci et nibh pulvinar scelerisque ut consectetur mauris. Donec nulla mi, viverra sed urna in, lobortis aliquet sem. Mauris luctus justo quis ex gravida, at sagittis justo rhoncus. Fusce semper maximus neque. Aliquam egestas ligula ut molestie sollicitudin. Duis bibendum lacus quis dui aliquet blandit. Duis risus mauris, fringilla vitae fringilla at, laoreet pharetra eros. Donec eleifend gravida magna eget vulputate. ",
-      Colors.green,
-    ],
-    [
-      "Workouts",
-      "Morbi rhoncus volutpat augue, nec pharetra justo blandit non. Ut a mauris rhoncus, laoreet sem vel, euismod quam. Aenean elit neque, dignissim eget interdum eu, maximus a massa. Quisque ut quam ipsum. Fusce auctor egestas urna, a aliquet velit interdum ac. Nulla faucibus felis vulputate neque ullamcorper, ac porttitor sapien euismod. Duis efficitur facilisis nisi, non laoreet sem hendrerit eu. Quisque at scelerisque neque. ",
-      Colors.blue,
-    ],
-    [
-      "Messages",
-      "Phasellus tincidunt efficitur tempus. Donec tempor eu dui ut bibendum. Vivamus in placerat sapien, et pellentesque libero. Praesent tristique molestie risus nec ornare. Vivamus elit enim, vestibulum ac tempus sed, condimentum gravida arcu. Vivamus nec egestas elit. Donec sit amet tellus quam. Fusce tristique nunc ut est pellentesque, vel rutrum turpis molestie. Ut et eros dolor. Vestibulum vel neque ut justo lacinia gravida. Curabitur pretium vel turpis eu consequat. Sed sollicitudin tristique urna, in consequat sapien interdum id. Sed vulputate egestas elit, elementum rhoncus mauris pellentesque nec. ",
-      Colors.red,
-    ],
-    [
-      "Notes",
-      "Maecenas auctor odio libero, id ullamcorper lectus volutpat ac. Donec ligula sem, porttitor a tortor a, iaculis feugiat dolor. Praesent bibendum neque malesuada mi sollicitudin tempus eu at dui. Aenean imperdiet rutrum erat, in volutpat erat imperdiet et. Integer fringilla leo sed cursus dictum. Integer vel ligula odio. Donec turpis nibh, hendrerit vel pellentesque et, luctus eu risus. Etiam a enim pulvinar, imperdiet justo sit amet, vulputate odio. Sed laoreet dapibus eros quis tempor. Fusce at magna in dui convallis pharetra. Proin sit amet accumsan risus, et gravida tortor. Quisque et nunc consequat, pharetra magna et, tempus justo. ",
-      Colors.orange,
-    ],
-  ];
+  //reference the hive box
+  final _myBox = Hive.box('myBox');
+  NotesDatabase db = NotesDatabase();
+
+  @override
+  void initState() {
+    // if this is the first time ever opening the app, then create default data
+    if (_myBox.get('NOTES') == null) {
+      db.createInitialData();
+    } else {
+      // there already exists data
+      db.loadData();
+    }
+
+    super.initState();
+  }
 
   //text controller
   final _notename = TextEditingController();
   final _note = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   Color _selectedCategory = Colors.blue;
 
   //save new note
   void saveNewNote() {
-    setState(() {
-      _notes.add([_notename.text, _note.text, _selectedCategory]);
-      _notename.clear();
-      _note.clear();
-      _selectedCategory = Colors.blue; // Reset to default
-    });
-    Navigator.of(context).pop();
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        db.notes.add([_notename.text, _note.text, _selectedCategory]);
+        _notename.clear();
+        _note.clear();
+        _selectedCategory = Colors.blue; // Reset to default
+      });
+      Navigator.of(context).pop();
+      db.updateDatabase();
+    }
   }
 
   // Category change callback
@@ -60,6 +55,7 @@ class _NotesState extends State<Notes> {
     setState(() {
       _selectedCategory = category;
     });
+    db.updateDatabase();
   }
 
   //create new note
@@ -71,12 +67,14 @@ class _NotesState extends State<Notes> {
           note: _note,
           noteName: _notename,
           onSave: saveNewNote,
-          onCancel: () => Navigator.of(context).pop,
+          onCancel: () => Navigator.of(context).pop(),
           selectedCategory: _selectedCategory,
           onCategoryChanged: onCategoryChanged,
+          formKey: _formKey,
         );
       },
     );
+    db.updateDatabase();
   }
 
   void showViewer() {
@@ -90,6 +88,7 @@ class _NotesState extends State<Notes> {
         );
       },
     );
+    db.updateDatabase();
   }
 
   @override
@@ -104,7 +103,7 @@ class _NotesState extends State<Notes> {
       ),
 
       body: GridView.builder(
-        itemCount: _notes.length,
+        itemCount: db.notes.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
         ),
@@ -112,9 +111,9 @@ class _NotesState extends State<Notes> {
           return GestureDetector(
             onTap: showViewer,
             child: NotesTile(
-              noteName: _notes[index][0],
-              preview: _notes[index][1],
-              category: _notes[index][2],
+              noteName: db.notes[index][0],
+              preview: db.notes[index][1],
+              category: db.notes[index][2],
             ),
           );
         },
