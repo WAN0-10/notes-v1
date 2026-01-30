@@ -1,6 +1,7 @@
 # notes_v1 📝
 
 A Flutter-based productivity app combining a **To-Do list**, **Notes panel**, and a **Daily Journal** into a single, lightweight interface.
+Inspired by 
 
 This project is my first Flutter application. It started as a simple To-Do app and naturally grew into something more useful, because minimalism is great until you actually want features.
 
@@ -45,6 +46,13 @@ This project was created to:
 - Search and filtering
 - Improved UI polish
 - Cross-device sync
+
+## 📚 Acknowledgements
+
+This project was inspired by and initially guided by a Flutter tutorial:
+- TO DO App • Flutter Tutorial ♥ Hive Local Storage (https://youtu.be/mMgr47QBZWA?si=J0Wl4wjOaTwm1c3U)
+
+The app was extended beyond the tutorial with additional features, UI changes, and theming to better explore Flutter concepts and practical usage.
 
 ---
 
