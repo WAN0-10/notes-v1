@@ -17,6 +17,8 @@ class _NotesState extends State<Notes> {
   final _myBox = Hive.box('myBox');
   NotesDatabase db = NotesDatabase();
 
+  // Track the current note index being edited
+
   @override
   void initState() {
     // if this is the first time ever opening the app, then create default data
@@ -50,6 +52,15 @@ class _NotesState extends State<Notes> {
     }
   }
 
+  //save edited note
+  void editedNote(int index) {
+    setState(() {
+      db.notes[index] = [_notename.text, _note.text, _selectedCategory];
+    });
+    Navigator.of(context).pop();
+    db.updateDatabase();
+  }
+
   // Category change callback
   void onCategoryChanged(Color category) {
     setState(() {
@@ -77,7 +88,19 @@ class _NotesState extends State<Notes> {
     db.updateDatabase();
   }
 
-  void showViewer() {
+  void deleteNote(int index) {
+    setState(() {
+      db.notes.removeAt(index);
+    });
+    db.updateDatabase();
+  }
+
+  void showViewer(int index) {
+    // Store the selected note data for editing and track the index
+    _notename.text = db.notes[index][0];
+    _note.text = db.notes[index][1];
+    _selectedCategory = db.notes[index][2];
+
     showDialog(
       context: context,
       builder: (context) {
@@ -85,10 +108,16 @@ class _NotesState extends State<Notes> {
           noteName: _notename,
           note: _note,
           selectedCategory: _selectedCategory,
+          index: index,
+          onSave: editedNote,
+          onCancel: () => Navigator.of(context).pop(),
+          onDelete: () {
+            deleteNote(index);
+            Navigator.of(context).pop();
+          },
         );
       },
     );
-    db.updateDatabase();
   }
 
   @override
@@ -109,7 +138,7 @@ class _NotesState extends State<Notes> {
         ),
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: showViewer,
+            onTap: () => showViewer(index),
             child: NotesTile(
               noteName: db.notes[index][0],
               preview: db.notes[index][1],

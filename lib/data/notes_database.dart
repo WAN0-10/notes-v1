@@ -46,6 +46,6 @@ class NotesDatabase {
 
   //update database
   void updateDatabase() {
-    _myBox.put("NOTES", Notes);
+    _myBox.put("NOTES", notes);
   }
 }

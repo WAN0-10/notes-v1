@@ -45,3 +45,4 @@ app.*.map.json
 /android/app/release
 
 TODO.md
+TODO_VALIDATOR.md

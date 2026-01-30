@@ -48,13 +48,17 @@ class TodoTile extends StatelessWidget {
                 activeColor: Colors.black,
               ),
               //Task name
-              Text(
-                taskName,
-                maxLines: 1,
-                style: TextStyle(
-                  decoration: taskCompleted
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Text(
+                    taskName,
+                    style: TextStyle(
+                      decoration: taskCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
                 ),
               ),
             ],
